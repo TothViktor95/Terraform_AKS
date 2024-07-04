@@ -1,0 +1,65 @@
+https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/kubernetes/cloud/azure/terraform
+
+
+AZURE CLI / Service Principal
+
+docker run -it --rm -v ${PWD}:/work -w /work --entrypoint /bin/sh mcr.microsoft.com/azure-cli:2.30.0
+
+
+     tenant ID= bc085369-1be6-4213-ae67-2a00a6eb2d82
+     subscription id= 23e471d7-22d5-402c-b703-eef64b84fd42
+
+Service Principal id:
+     "appId": "01fe9d09-383b-45ea-a5cb-46b34d82361a"
+Service Principal pw/value:
+     "password": "SuyoJR~we-vsil8IItaDm-LbrQ_IdcSrCj"
+
+--------
+
+     az account set --subscription $SUBSCRIPTION
+
+     SERVICE_PRINCIPAL_JSON=$(az ad sp create-for-rbac --skip-assignment --name aks-getting-started-sp -o json)
+
+     echo $SERVICE_PRINCIPAL_JSON
+          innen van az appId és a password hozzá
+
+
+
+          echo $SERVICE_PRINCIPAL_JSON
+{ "appId": "01fe9d09-383b-45ea-a5cb-46b34d82361a", "displayName": "aks-getting-started-sp", "name": "01fe9d09-383b-45ea-a5cb-46b34d82361a", "password": "SuyoJR~we-vsil8IItaDm-LbrQ_IdcSrCj", "tenant": "bc085369-1be6-4213-ae67-2a00a6eb2d82" }
+
+
+
+     SERVICE_PRINCIPAL=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.appId')
+     SERVICE_PRINCIPAL_SECRET=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.password')
+
+          #note: reset the credential if you have any sinlge or double quote on password
+          az ad sp credential reset --name "aks-getting-started-sp"
+
+     # Grant contributor role over the subscription to our service principal
+
+     az role assignment create --assignee $SERVICE_PRINCIPAL --scope "/subscription $SUBSCRIPTION" --role Contributor
+
+     {
+       "canDelegate": null,
+       "condition": null,
+       "conditionVersion": null,
+       "description": null,
+       "id": "/subscriptions/23e471d7-22d5-402c-b703-eef64b84fd42/providers/Microsoft.Authorization/roleAssignments/3b44a633-dac3-4bce-9ed3-5b8b965ef2ec",
+       "name": "3b44a633-dac3-4bce-9ed3-5b8b965ef2ec",
+       "principalId": "e769ea11-c196-4c98-9ec8-93757bf4e926",
+       "principalType": "ServicePrincipal",
+       "roleDefinitionId": "/subscriptions/23e471d7-22d5-402c-b703-eef64b84fd42/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c",
+       "scope": "/subscriptions/23e471d7-22d5-402c-b703-eef64b84fd42",
+       "type": "Microsoft.Authorization/roleAssignments"
+     }
+
+
+
+
+
+
+
+
+
+

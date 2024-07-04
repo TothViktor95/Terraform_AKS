@@ -1,0 +1,8 @@
+# Ignore Terraform state files
+.terraform/
+
+*.tfstate
+*.tfstate.*
+
+# Ignore editor specific files
+.vscode/
